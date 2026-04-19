@@ -10,3 +10,9 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+file:
+  upload-dir: C:/dev/SafeSign/uploads/contracts
