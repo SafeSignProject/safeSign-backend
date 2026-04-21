@@ -1,6 +1,8 @@
 package com.safesign.backend.domain.contract.service;
 
 import com.safesign.backend.domain.contract.dto.response.StoredFileInfo;
+import com.safesign.backend.global.exception.CustomException;
+import com.safesign.backend.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,13 +41,13 @@ public class FileStorageService {
                     .build();
 
         } catch (IOException e) {
-            throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
+            throw new CustomException(ErrorCode.FILE_STORAGE_FAILED);
         }
     }
 
     private void validateFileExists(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.EMPTY_UPLOAD_FILE);
         }
     }
 

@@ -14,5 +14,11 @@ spring:
       hibernate:
         format_sql: true
 
+azure:
+  document-intelligence:
+    endpoint: ${AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT}
+    key: ${AZURE_DOCUMENT_INTELLIGENCE_KEY}
+    model-id: prebuilt-layout
+
 file:
   upload-dir: C:/dev/SafeSign/uploads/contracts
