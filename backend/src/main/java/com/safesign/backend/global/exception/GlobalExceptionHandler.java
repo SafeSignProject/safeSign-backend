@@ -27,13 +27,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
+
+        e.printStackTrace(); // 🔥 콘솔에 진짜 에러 출력
+
         return ResponseEntity
                 .internalServerError()
                 .body(
                         ErrorResponse.builder()
                                 .status(500)
                                 .error("INTERNAL_SERVER_ERROR")
-                                .message("서버 내부 오류가 발생했습니다.")
+                                .message(e.getMessage())
                                 .timestamp(LocalDateTime.now())
                                 .build()
                 );
