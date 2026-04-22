@@ -11,6 +11,8 @@ import com.safesign.backend.domain.contract.repository.ContractFileRepository;
 import com.safesign.backend.domain.contract.repository.ContractRepository;
 import com.safesign.backend.domain.user.entity.User;
 import com.safesign.backend.domain.user.repository.UserRepository;
+import com.safesign.backend.global.exception.CustomException;
+import com.safesign.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -35,7 +37,7 @@ public class ContractService {
         validateFilesExist(files);
 
         User user = userRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("테스트 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return switch (uploadType) {
             case PDF -> uploadPdf(files, title, user);
@@ -45,7 +47,7 @@ public class ContractService {
 
     private ContractUploadResponse uploadPdf(List<MultipartFile> files, String title, User user) {
         if (files.size() != 1) {
-            throw new IllegalArgumentException("PDF 업로드는 파일 1개만 가능합니다.");
+            throw new CustomException(ErrorCode.INVALID_PDF_FILE_COUNT);
         }
 
         MultipartFile file = files.get(0);
@@ -127,29 +129,29 @@ public class ContractService {
 
     private void validateFilesExist(List<MultipartFile> files) {
         if (files == null || files.isEmpty()) {
-            throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.EMPTY_UPLOAD_FILE);
         }
     }
 
     private void validatePdfFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
+            throw new CustomException(ErrorCode.EMPTY_UPLOAD_FILE);
         }
 
         if (!"application/pdf".equals(file.getContentType())) {
-            throw new IllegalArgumentException("PDF 파일만 업로드할 수 있습니다.");
+            throw new CustomException(ErrorCode.INVALID_PDF_UPLOAD);
         }
     }
 
     private void validateImageFiles(List<MultipartFile> files) {
         for (MultipartFile file : files) {
             if (file == null || file.isEmpty()) {
-                throw new IllegalArgumentException("업로드 파일이 비어 있습니다.");
+                throw new CustomException(ErrorCode.EMPTY_UPLOAD_FILE);
             }
 
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
-                throw new IllegalArgumentException("이미지 파일만 업로드할 수 있습니다.");
+                throw new CustomException(ErrorCode.INVALID_IMAGE_UPLOAD);
             }
         }
     }
@@ -158,7 +160,7 @@ public class ContractService {
         try (PDDocument document = Loader.loadPDF(file.getBytes())) {
             return document.getNumberOfPages();
         } catch (IOException e) {
-            throw new IllegalArgumentException("PDF 페이지 수를 읽는 중 오류가 발생했습니다.", e);
+            throw new CustomException(ErrorCode.PDF_PAGE_COUNT_READ_FAILED);
         }
     }
 }
