@@ -34,7 +34,7 @@ public class OcrResult {
     @Column(nullable = false, length = 30)
     private OcrStatus status;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String fullText;
 
     @Lob
