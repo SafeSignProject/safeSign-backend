@@ -34,10 +34,10 @@ public class OcrResult {
     @Column(nullable = false, length = 30)
     private OcrStatus status;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "full_text", columnDefinition = "TEXT")
     private String fullText;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String rawJson;
 
     private LocalDateTime startedAt;

@@ -23,9 +23,7 @@ public class ContractOcrResult {
     private Contract contract;
 
     // OCR 전체 텍스트
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "full_text", columnDefinition = "TEXT")
     private String fullText;
 }
