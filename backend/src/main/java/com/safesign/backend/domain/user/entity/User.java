@@ -1,37 +1,46 @@
 package com.safesign.backend.domain.user.entity;
 
+import com.safesign.backend.domain.user.enums.ProviderType;
+import com.safesign.backend.domain.user.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_provider_user",
+                        columnNames = {"provider_type", "provider_user_id"}
+                )
+        }
+)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(length = 255)
     private String email;
 
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 20)
-    private String providerType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider_type", nullable = false, length = 20)
+    private ProviderType providerType;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "provider_user_id", nullable = false, length = 255)
     private String providerUserId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String role;
+    private UserRole role;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -40,7 +49,13 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Builder
-    public User(String email, String name, String providerType, String providerUserId, String role) {
+    public User(
+            String email,
+            String name,
+            ProviderType providerType,
+            String providerUserId,
+            UserRole role
+    ) {
         this.email = email;
         this.name = name;
         this.providerType = providerType;
@@ -52,6 +67,10 @@ public class User {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+
+        if (this.role == null) {
+            this.role = UserRole.USER;
+        }
     }
 
     @PreUpdate
