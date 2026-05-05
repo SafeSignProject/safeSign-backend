@@ -45,8 +45,9 @@ public class OcrService {
     private final AzureOcrProperties azureOcrProperties;
     private final ObjectMapper objectMapper;
 
-    public void process(Long contractId) {
-        Contract contract = contractRepository.findById(contractId)
+    public void process(Long userId, Long contractId) {
+        Contract contract = contractRepository
+                .findByContractIdAndUser_UserId(contractId, userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
 
         ContractFile contractFile = getFirstContractFile(contract);

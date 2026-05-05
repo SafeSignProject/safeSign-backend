@@ -9,6 +9,8 @@ import com.safesign.backend.domain.ocr.entity.OcrResult;
 import com.safesign.backend.domain.ocr.repository.OcrLineRepository;
 import com.safesign.backend.domain.ocr.repository.OcrPageRepository;
 import com.safesign.backend.domain.ocr.repository.OcrResultRepository;
+import com.safesign.backend.domain.contract.entity.Contract;
+import com.safesign.backend.domain.contract.repository.ContractRepository;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,14 @@ public class OcrQueryService {
     private final OcrResultRepository ocrResultRepository;
     private final OcrPageRepository ocrPageRepository;
     private final OcrLineRepository ocrLineRepository;
+    private final ContractRepository contractRepository;
 
-    public OcrResponse getLatestOcrResult(Long contractId) {
-        OcrResult ocrResult = ocrResultRepository.findLatestByContractId(contractId)
+    public OcrResponse getLatestOcrResult(Long userId, Long contractId) {
+        Contract contract = contractRepository
+                .findByContractIdAndUser_UserId(contractId, userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        OcrResult ocrResult = ocrResultRepository.findLatestByContract(contract)
                 .orElseThrow(() -> new CustomException(ErrorCode.OCR_RESULT_NOT_FOUND));
 
         List<OcrPage> pages = ocrPageRepository.findAllByOcrResultId(ocrResult.getOcrResultId());

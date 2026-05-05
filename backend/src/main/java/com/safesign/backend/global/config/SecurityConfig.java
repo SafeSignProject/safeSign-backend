@@ -38,10 +38,10 @@ public class SecurityConfig {
                                 "/auth/reissue"
                         ).permitAll()
 
-                        .requestMatchers("/auth/me").authenticated()
+                        .requestMatchers("/api/v1/auth/me").authenticated()
                         .requestMatchers("/api/v1/contracts/**").authenticated()
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 .oauth2Login(oauth2 -> oauth2
