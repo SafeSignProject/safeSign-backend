@@ -33,10 +33,10 @@ public class ContractService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
 
-    public ContractUploadResponse uploadContract(List<MultipartFile> files, String title, UploadType uploadType) {
+    public ContractUploadResponse uploadContract(Long userId, List<MultipartFile> files, String title, UploadType uploadType) {
         validateFilesExist(files);
 
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return switch (uploadType) {

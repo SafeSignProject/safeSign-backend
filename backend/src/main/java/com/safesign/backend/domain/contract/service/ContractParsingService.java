@@ -5,6 +5,8 @@ import com.safesign.backend.domain.contract.entity.Contract;
 import com.safesign.backend.domain.contract.entity.ContractOcrResult;
 import com.safesign.backend.domain.contract.repository.ContractRepository;
 import com.safesign.backend.domain.contract.repository.ContractOcrResultRepository;
+import com.safesign.backend.global.exception.CustomException;
+import com.safesign.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +22,15 @@ public class ContractParsingService {
     private final ContractOcrResultRepository ocrRepository;
 
     @Transactional(readOnly = true)
-    public ParsingResponse parse(Long contractId) {
+    public ParsingResponse parse(Long userId, Long contractId) {
 
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new RuntimeException("계약 없음"));
+        Contract contract = contractRepository
+                .findByContractIdAndUser_UserId(contractId, userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
 
         ContractOcrResult ocr = ocrRepository
-                .findTopByContract_ContractIdOrderByOcrResultIdDesc(contractId)
-                .orElseThrow(() -> new RuntimeException("OCR 없음"));
+                .findLatestOcrResult(contract)
+                .orElseThrow(() -> new CustomException(ErrorCode.OCR_RESULT_NOT_FOUND));
 
         String text = preprocess(ocr.getFullText());
 
@@ -41,7 +44,7 @@ public class ContractParsingService {
         String contractDate = extractContractDate(text);
 
         return new ParsingResponse(
-                contractId,
+                contract.getContractId(),
                 clauses.size(),
                 "파싱 완료",
                 header,
