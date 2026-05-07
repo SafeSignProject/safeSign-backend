@@ -30,27 +30,84 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    // Access Token 생성
+    // USER ACCESS TOKEN
+
     public String createAccessToken(Long userId) {
+
         Date now = new Date();
 
         return Jwts.builder()
+
                 .setSubject(String.valueOf(userId))
+
+                .claim("role", "USER")
+
+                .claim("type", "USER")
+
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + accessTokenExpiration))
+
+                .setExpiration(
+                        new Date(
+                                now.getTime()
+                                        + accessTokenExpiration
+                        )
+                )
+
                 .signWith(key, SignatureAlgorithm.HS256)
+
                 .compact();
     }
 
-    // Refresh Token 생성
-    public String createRefreshToken(Long userId) {
+    // ADMIN ACCESS TOKEN
+    public String createAdminAccessToken(
+            Long adminId,
+            String role
+    ) {
+
         Date now = new Date();
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+
+                .setSubject(String.valueOf(adminId))
+
+                .claim("role", role)
+
+                .claim("type", "ADMIN")
+
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
+
+                .setExpiration(
+                        new Date(
+                                now.getTime()
+                                        + accessTokenExpiration
+                        )
+                )
+
                 .signWith(key, SignatureAlgorithm.HS256)
+
+                .compact();
+    }
+
+    // REFRESH TOKEN
+    public String createRefreshToken(Long userId) {
+
+        Date now = new Date();
+
+        return Jwts.builder()
+
+                .setSubject(String.valueOf(userId))
+
+                .setIssuedAt(now)
+
+                .setExpiration(
+                        new Date(
+                                now.getTime()
+                                        + refreshTokenExpiration
+                        )
+                )
+
+                .signWith(key, SignatureAlgorithm.HS256)
+
                 .compact();
     }
 
@@ -58,24 +115,76 @@ public class JwtTokenProvider {
         return refreshTokenExpiration;
     }
 
-    // userId 추출
+    // USER ID 추출
     public Long getUserId(String token) {
+
         return Long.parseLong(
+
                 Jwts.parserBuilder()
+
                         .setSigningKey(key)
+
                         .build()
+
                         .parseClaimsJws(token)
+
                         .getBody()
+
                         .getSubject()
         );
     }
 
-    // 토큰 검증
+
+    // ROLE 추출
+    public String getRole(String token) {
+
+        return Jwts.parserBuilder()
+
+                .setSigningKey(key)
+
+                .build()
+
+                .parseClaimsJws(token)
+
+                .getBody()
+
+                .get("role", String.class);
+    }
+
+
+    // TYPE 추출
+    public String getType(String token) {
+
+        return Jwts.parserBuilder()
+
+                .setSigningKey(key)
+
+                .build()
+
+                .parseClaimsJws(token)
+
+                .getBody()
+
+                .get("type", String.class);
+    }
+
+    // TOKEN 검증
     public boolean validateToken(String token) {
+
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+
+            Jwts.parserBuilder()
+
+                    .setSigningKey(key)
+
+                    .build()
+
+                    .parseClaimsJws(token);
+
             return true;
+
         } catch (Exception e) {
+
             return false;
         }
     }
