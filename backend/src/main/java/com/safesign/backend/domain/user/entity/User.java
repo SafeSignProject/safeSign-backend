@@ -2,7 +2,9 @@ package com.safesign.backend.domain.user.entity;
 
 import com.safesign.backend.domain.user.enums.ProviderType;
 import com.safesign.backend.domain.user.enums.UserRole;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,7 +17,10 @@ import java.time.LocalDateTime;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_provider_user",
-                        columnNames = {"provider_type", "provider_user_id"}
+                        columnNames = {
+                                "provider_type",
+                                "provider_user_id"
+                        }
                 )
         }
 )
@@ -28,14 +33,26 @@ public class User {
     @Column(length = 255)
     private String email;
 
+    // 관리자 로그인용 비밀번호
+    @Column(length = 255)
+    private String password;
+
     @Column(nullable = false, length = 100)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "provider_type", nullable = false, length = 20)
+    @Column(
+            name = "provider_type",
+            nullable = false,
+            length = 20
+    )
     private ProviderType providerType;
 
-    @Column(name = "provider_user_id", nullable = false, length = 255)
+    @Column(
+            name = "provider_user_id",
+            nullable = false,
+            length = 255
+    )
     private String providerUserId;
 
     @Enumerated(EnumType.STRING)
@@ -51,12 +68,14 @@ public class User {
     @Builder
     public User(
             String email,
+            String password,
             String name,
             ProviderType providerType,
             String providerUserId,
             UserRole role
     ) {
         this.email = email;
+        this.password = password;
         this.name = name;
         this.providerType = providerType;
         this.providerUserId = providerUserId;
@@ -65,6 +84,7 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
+
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
 
@@ -75,6 +95,7 @@ public class User {
 
     @PreUpdate
     protected void onUpdate() {
+
         this.updatedAt = LocalDateTime.now();
     }
 }
