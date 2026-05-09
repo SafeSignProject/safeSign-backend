@@ -3,6 +3,9 @@ package com.safesign.backend.domain.contract.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "contract_header_info")
 @Getter
@@ -14,53 +17,68 @@ public class ContractHeaderInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "header_info_id")
     private Long headerInfoId;
 
-    // 🔗 계약 FK (연관관계)
+    // 계약 FK
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
-    // 원본 표제부
-    @Column(columnDefinition = "TEXT")
-    private String rawHeader;
+    // 임대인명
+    @Column(name = "landlord_name", length = 100)
+    private String landlordName;
 
-    @Column(columnDefinition = "TEXT")
-    private String address;
+    // 주소
+    @Column(name = "property_address", length = 500)
+    private String propertyAddress;
 
-    @Column(columnDefinition = "TEXT")
-    private String landCategory;
+    // 면적
+    @Column(name = "property_area", precision = 10, scale = 2)
+    private BigDecimal propertyArea;
 
-    @Column(columnDefinition = "TEXT")
-    private String landArea;
+    // 보증금
+    @Column(name = "deposit_amount")
+    private Long depositAmount;
 
-    @Column(columnDefinition = "TEXT")
-    private String buildingStructure;
+    // 월세
+    @Column(name = "monthly_rent")
+    private Long monthlyRent;
 
-    @Column(columnDefinition = "TEXT")
-    private String buildingUsage;
+    // 계약금
+    @Column(name = "contract_payment")
+    private Long contractPayment;
 
-    @Column(columnDefinition = "TEXT")
-    private String buildingArea;
+    // 중도금
+    @Column(name = "intermediate_payment")
+    private Long intermediatePayment;
 
-    @Column(columnDefinition = "TEXT")
-    private String leasedPart;
+    // 잔금
+    @Column(name = "balance_payment")
+    private Long balancePayment;
 
-    @Column(columnDefinition = "TEXT")
-    private String leasedArea;
+    // 중개보수
+    @Column(name = "broker_fee")
+    private Long brokerFee;
 
-    @Column(columnDefinition = "TEXT")
-    private String deposit;
+    // 생성일
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "TEXT")
-    private String contractAmount;
+    // 수정일
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
-    @Column(columnDefinition = "TEXT")
-    private String middlePayment;
+    @PrePersist
+    protected void onCreate() {
 
-    @Column(columnDefinition = "TEXT")
-    private String balance;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
-    @Column(columnDefinition = "TEXT")
-    private String monthlyRent;
+    @PreUpdate
+    protected void onUpdate() {
+
+        this.updatedAt = LocalDateTime.now();
+    }
 }

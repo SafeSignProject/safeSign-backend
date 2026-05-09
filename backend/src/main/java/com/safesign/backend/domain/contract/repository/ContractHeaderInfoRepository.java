@@ -1,11 +1,11 @@
 package com.safesign.backend.domain.contract.repository;
 
 import com.safesign.backend.domain.contract.entity.Contract;
-import com.safesign.backend.domain.contract.entity.ContractClause;
+import com.safesign.backend.domain.contract.entity.ContractHeaderInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContractClauseRepository
-        extends JpaRepository<ContractClause, Long> {
+public interface ContractHeaderInfoRepository
+        extends JpaRepository<ContractHeaderInfo, Long> {
 
     void deleteByContract(Contract contract);
 }
