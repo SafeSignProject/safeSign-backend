@@ -31,7 +31,7 @@ public class AdminAuthService {
     ) {
 
         User user = userRepository
-                .findByEmail(request.getEmail())
+                .findByEmailAndDeletedAtIsNull(request.getEmail())
                 .orElseThrow(() ->
                         new CustomException(
                                 ErrorCode.USER_NOT_FOUND

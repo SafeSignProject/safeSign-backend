@@ -6,6 +6,7 @@ import com.safesign.backend.domain.admin.service.AdminUserService;
 import com.safesign.backend.global.auth.CustomUserDetails;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
+import com.safesign.backend.domain.admin.dto.response.AdminUserDeleteResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +49,55 @@ public class AdminUserController {
 
         return ResponseEntity.ok(
                 adminUserService.getUsers()
+        );
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<AdminUserResponse> getUserDetail(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        // 로그인 체크
+        if (userDetails == null) {
+
+            throw new CustomException(
+                    ErrorCode.ACCESS_DENIED
+            );
+        }
+
+        // 관리자 권한 체크
+        if (!userDetails.getRole().equals("ADMIN")) {
+
+            throw new CustomException(
+                    ErrorCode.ACCESS_DENIED
+            );
+        }
+
+        return ResponseEntity.ok(
+                adminUserService.getUserDetail(userId)
+        );
+    }
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<AdminUserDeleteResponse> deleteUser(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        if (userDetails == null) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (!userDetails.getRole().equals("ADMIN")) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (userDetails.getUserId().equals(userId)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        return ResponseEntity.ok(
+                adminUserService.deleteUser(userId)
         );
     }
 }
