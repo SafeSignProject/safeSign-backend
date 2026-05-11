@@ -37,6 +37,9 @@ public class User {
     @Column(length = 255)
     private String password;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -97,5 +100,9 @@ public class User {
     protected void onUpdate() {
 
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
     }
 }
