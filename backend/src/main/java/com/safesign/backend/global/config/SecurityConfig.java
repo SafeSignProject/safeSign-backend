@@ -63,17 +63,17 @@ public class SecurityConfig {
 
                                 "/favicon.ico",
 
-                                "/auth/reissue",
+                                "/api/v1/auth/reissue",
 
                                 "/api/v1/admin/auth/**"
                         ).permitAll()
 
                         // 관리자 전용
-                        .requestMatchers("/api/admin/**")
+                        .requestMatchers("/api/v1/admin/**")
                         .authenticated()
 
                         // 로그인 사용자
-                        .requestMatchers("/api/v1/auth/me")
+                        .requestMatchers("/api/v1/auth/**")
                         .authenticated()
 
                         .requestMatchers("/api/v1/contracts/**")

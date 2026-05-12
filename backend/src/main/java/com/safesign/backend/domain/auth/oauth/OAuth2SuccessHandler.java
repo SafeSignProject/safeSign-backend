@@ -3,7 +3,7 @@ package com.safesign.backend.domain.auth.oauth;
 import com.safesign.backend.domain.auth.service.RefreshTokenService;
 import com.safesign.backend.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
+import org.springframework.http.ResponseCookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
@@ -20,6 +21,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
+
+    @Value("${app.cookie.secure}")
+    private boolean cookieSecure;
+
+    @Value("${app.cookie.same-site}")
+    private String cookieSameSite;
 
     @Override
     public void onAuthenticationSuccess(
@@ -32,7 +42,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         Long userId = Long.valueOf(oauth2User.getName());
 
-        String accessToken = jwtTokenProvider.createAccessToken(userId);
         String refreshToken = jwtTokenProvider.createRefreshToken(userId);
 
         refreshTokenService.saveRefreshToken(
@@ -41,18 +50,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 jwtTokenProvider.getRefreshTokenExpiration()
         );
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false); // 로컬은 false, 배포 HTTPS는 true
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge((int) (jwtTokenProvider.getRefreshTokenExpiration() / 1000));
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(false) // 로컬 false, 배포 HTTPS true
+                .path("/")
+                .sameSite("Lax") // 로컬은 Lax 권장, 배포 시 None
+                .maxAge(jwtTokenProvider.getRefreshTokenExpiration() / 1000)
+                .build();
 
-        response.addCookie(refreshTokenCookie);
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        String body = "{\"accessToken\": \"" + accessToken + "\"}";
-        response.getWriter().write(body);
+        response.sendRedirect(frontendUrl + "/oauth/success");
     }
 }
