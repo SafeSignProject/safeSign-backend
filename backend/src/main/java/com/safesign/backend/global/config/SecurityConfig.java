@@ -37,21 +37,16 @@ public class SecurityConfig {
 
         http
                 .cors(Customizer.withDefaults())
-
                 .csrf(csrf -> csrf.disable())
-
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-
                 .formLogin(form -> form.disable())
-
                 .httpBasic(httpBasic -> httpBasic.disable())
-
+                .logout(logout -> logout.disable())
                 .authorizeHttpRequests(auth -> auth
-
                         // permitAll
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -67,6 +62,9 @@ public class SecurityConfig {
 
                                 "/api/v1/admin/auth/**"
                         ).permitAll()
+
+                        .requestMatchers("/api/v1/users/**")
+                        .authenticated()
 
                         // 관리자 전용
                         .requestMatchers("/api/v1/admin/**")

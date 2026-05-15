@@ -105,4 +105,14 @@ public class User {
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void withdraw() {
+        String suffix = "_deleted_" + this.userId + "_" + System.currentTimeMillis();
+
+        this.email = "deleted_" + this.userId + "_" + System.currentTimeMillis() + "@deleted.local";
+        this.password = null;
+        this.name = "탈퇴한 사용자";
+        this.providerUserId = this.providerUserId + suffix;
+        this.deletedAt = LocalDateTime.now();
+    }
 }
