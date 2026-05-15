@@ -2,11 +2,16 @@ package com.safesign.backend.domain.auth.oauth;
 
 import com.safesign.backend.domain.auth.service.RefreshTokenService;
 import com.safesign.backend.global.auth.jwt.JwtTokenProvider;
-import jakarta.servlet.ServletException;
+import com.safesign.backend.global.config.CookieProperties;
+
 import org.springframework.http.ResponseCookie;
+
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -21,6 +26,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final CookieProperties cookieProperties;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -52,14 +58,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false) // 로컬 false, 배포 HTTPS true
+                .secure(cookieProperties.isSecure())
                 .path("/")
-                .sameSite("Lax") // 로컬은 Lax 권장, 배포 시 None
+                .sameSite(cookieProperties.getSameSite())
                 .maxAge(jwtTokenProvider.getRefreshTokenExpiration() / 1000)
                 .build();
 
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
-        response.sendRedirect(frontendUrl + "/oauth/success");
+        response.sendRedirect("http://localhost:8080/swagger-ui/index.html");
+        //response.sendRedirect(frontendUrl + "/oauth/success");
     }
 }
