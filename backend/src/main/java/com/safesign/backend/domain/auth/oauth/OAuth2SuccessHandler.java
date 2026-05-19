@@ -31,12 +31,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
-    @Value("${app.cookie.secure}")
-    private boolean cookieSecure;
-
-    @Value("${app.cookie.same-site}")
-    private String cookieSameSite;
-
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
