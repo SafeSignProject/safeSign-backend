@@ -60,7 +60,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
-        response.sendRedirect("http://localhost:8080/swagger-ui/index.html");
-        //response.sendRedirect(frontendUrl + "/oauth/success");
+        response.sendRedirect(frontendUrl);
     }
 }
