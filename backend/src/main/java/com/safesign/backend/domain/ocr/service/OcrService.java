@@ -9,6 +9,7 @@ import com.safesign.backend.domain.contract.entity.Contract;
 import com.safesign.backend.domain.contract.entity.ContractFile;
 import com.safesign.backend.domain.contract.enums.ContractStatus;
 import com.safesign.backend.domain.contract.repository.ContractRepository;
+import com.safesign.backend.domain.contract.service.FileStorageService;
 import com.safesign.backend.domain.ocr.client.AzureOcrClient;
 import com.safesign.backend.domain.ocr.config.AzureOcrProperties;
 import com.safesign.backend.domain.ocr.entity.OcrLine;
@@ -25,8 +26,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,6 +43,7 @@ public class OcrService {
     private final AzureOcrClient azureOcrClient;
     private final AzureOcrProperties azureOcrProperties;
     private final ObjectMapper objectMapper;
+    private final FileStorageService fileStorageService;
 
     public void process(Long userId, Long contractId) {
         Contract contract = contractRepository
@@ -64,7 +64,8 @@ public class OcrService {
         ocrResultRepository.save(ocrResult);
 
         try {
-            byte[] fileBytes = Files.readAllBytes(Path.of(contractFile.getFileUrl()));
+            byte[] fileBytes =
+                    fileStorageService.loadFile(contractFile.getFileUrl());
             AnalyzeResult analyzeResult =
                     azureOcrClient.analyze(fileBytes, azureOcrProperties.modelId());
 
