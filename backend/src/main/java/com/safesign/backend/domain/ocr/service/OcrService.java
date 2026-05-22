@@ -23,12 +23,14 @@ import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -86,6 +88,9 @@ public class OcrService {
             throw e;
 
         } catch (Exception e) {
+            log.error("OCR 처리 실패 - contractId={}", contractId, e);
+
+
             ocrResult.fail(e.getMessage());
             contract.updateStatus(ContractStatus.OCR_FAILED);
             contract.updateFailureReason(e.getMessage());
