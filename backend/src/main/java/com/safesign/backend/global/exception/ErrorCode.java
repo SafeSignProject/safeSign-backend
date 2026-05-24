@@ -23,7 +23,8 @@ public enum ErrorCode {
     FILE_STORAGE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장 중 오류가 발생했습니다."),
 
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다."),
-    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.");
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    ANALYSIS_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "분석 로그를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
