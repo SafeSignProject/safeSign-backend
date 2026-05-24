@@ -45,6 +45,13 @@ public class ContractService {
         };
     }
 
+    public void deleteContract(Long userId, Long contractId) {
+        Contract contract = contractRepository.findByContractIdAndUser_UserId(contractId, userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        contractRepository.delete(contract);
+    }
+    
     private ContractUploadResponse uploadPdf(List<MultipartFile> files, String title, User user) {
         if (files.size() != 1) {
             throw new CustomException(ErrorCode.INVALID_PDF_FILE_COUNT);

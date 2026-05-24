@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +24,9 @@ public class OcrPage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ocr_result_id", nullable = false)
     private OcrResult ocrResult;
+
+    @OneToMany(mappedBy = "ocrPage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OcrLine> lines = new ArrayList<>();
 
     @Column(nullable = false)
     private Integer pageNumber;

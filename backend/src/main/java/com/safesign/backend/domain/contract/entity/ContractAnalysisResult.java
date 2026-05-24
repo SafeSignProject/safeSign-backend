@@ -21,6 +21,8 @@ public class ContractAnalysisResult {
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
+
+
     @Column(nullable = false)
     private Integer overallRiskScore;
 

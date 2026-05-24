@@ -15,6 +15,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @Primary
 @Profile("local")
@@ -56,6 +59,15 @@ public class LocalFileStorageService implements FileStorageService {
             return Files.readAllBytes(Path.of(fileUrl));
         } catch (IOException e) {
             throw new CustomException(ErrorCode.FILE_STORAGE_FAILED);
+        }
+    }
+
+    @Override
+    public void deleteFile(String fileUrl) {
+        try {
+            Files.deleteIfExists(Paths.get(fileUrl));
+        } catch (IOException e) {
+            log.warn("로컬 파일 삭제 실패 - fileUrl={}", fileUrl, e);
         }
     }
 
