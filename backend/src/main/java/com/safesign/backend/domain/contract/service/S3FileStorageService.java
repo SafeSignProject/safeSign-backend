@@ -13,9 +13,13 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Profile("s3")
@@ -79,6 +83,18 @@ public class S3FileStorageService implements FileStorageService {
 
         } catch (Exception e) {
             throw new CustomException(ErrorCode.FILE_STORAGE_FAILED);
+        }
+    }
+
+    @Override
+    public void deleteFile(String fileUrl) {
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(fileUrl)
+                    .build());
+        } catch (Exception e) {
+            log.warn("S3 파일 삭제 실패 - fileUrl={}", fileUrl, e);
         }
     }
 

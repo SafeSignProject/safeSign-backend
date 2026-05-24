@@ -8,4 +8,6 @@ public interface FileStorageService {
     StoredFileInfo storeFile(MultipartFile file, Long contractId);
 
     byte[] loadFile(String fileUrl);
+
+    void deleteFile(String fileUrl);
 }

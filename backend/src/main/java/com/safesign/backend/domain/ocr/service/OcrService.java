@@ -90,7 +90,6 @@ public class OcrService {
         } catch (Exception e) {
             log.error("OCR 처리 실패 - contractId={}", contractId, e);
 
-
             ocrResult.fail(e.getMessage());
             contract.updateStatus(ContractStatus.OCR_FAILED);
             contract.updateFailureReason(e.getMessage());

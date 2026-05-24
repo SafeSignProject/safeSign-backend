@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,6 +25,9 @@ public class OcrResult {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
+
+    @OneToMany(mappedBy = "ocrResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OcrPage> pages = new ArrayList<>();
 
     @Column(nullable = false, length = 30)
     private String provider;

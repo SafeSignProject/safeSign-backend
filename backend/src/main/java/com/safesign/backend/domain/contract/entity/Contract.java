@@ -4,6 +4,7 @@ import com.safesign.backend.domain.contract.enums.ContractStatus;
 import com.safesign.backend.domain.contract.enums.UploadSource;
 import com.safesign.backend.domain.contract.enums.UploadType;
 import com.safesign.backend.domain.user.entity.User;
+import com.safesign.backend.domain.ocr.entity.OcrResult;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -65,6 +66,18 @@ public class Contract {
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContractFile> contractFiles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractClause> contractClauses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractHeaderInfo> contractHeaderInfos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OcrResult> ocrResults = new ArrayList<>();
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContractAnalysisResult> analysisResults = new ArrayList<>();
+
     @Builder
     public Contract(
             User user,
@@ -89,6 +102,11 @@ public class Contract {
     public void addContractFile(ContractFile contractFile) {
         this.contractFiles.add(contractFile);
         contractFile.assignContract(this);
+    }
+
+    public void addContractClause(ContractClause contractClause) {
+        this.contractClauses.add(contractClause);
+        contractClause.setContract(this);
     }
 
     public void updatePageCount(Integer pageCount) {
