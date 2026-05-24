@@ -23,4 +23,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             Long userId,
             String keyword
     );
+
+    Long countByUser_UserId(Long userId);
 }

@@ -56,25 +56,27 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login/**",
 
-                                "/favicon.ico",
-
                                 "/api/v1/auth/reissue",
 
-                                "/api/v1/admin/auth/**"
+                                "/api/v1/admin/auth/**",
+
+                                "/favicon.ico"
                         ).permitAll()
+
+                        .requestMatchers("/api/v1/auth/**")
+                        .authenticated()
 
                         .requestMatchers("/api/v1/users/**")
                         .authenticated()
 
-                        // 관리자 전용
-                        .requestMatchers("/api/v1/admin/**")
-                        .authenticated()
-
-                        // 로그인 사용자
-                        .requestMatchers("/api/v1/auth/**")
+                        .requestMatchers("/api/v1/dashboard/**")
                         .authenticated()
 
                         .requestMatchers("/api/v1/contracts/**")
+                        .authenticated()
+
+                        // 관리자 전용
+                        .requestMatchers("/api/v1/admin/**")
                         .authenticated()
 
                         .anyRequest()
