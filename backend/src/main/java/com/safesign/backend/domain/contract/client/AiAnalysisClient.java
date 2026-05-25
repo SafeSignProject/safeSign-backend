@@ -14,7 +14,7 @@ import java.time.Duration;
 public class AiAnalysisClient {
 
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
-    private static final Duration READ_TIMEOUT = Duration.ofSeconds(60);
+    private static final Duration READ_TIMEOUT = Duration.ofMinutes(5);
 
     private final RestClient restClient;
 
