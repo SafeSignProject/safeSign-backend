@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    AI_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI 분석 중 오류가 발생했습니다."),
     CONTRACT_NOT_FOUND(HttpStatus.NOT_FOUND, "계약서를 찾을 수 없습니다."),
     CONTRACT_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "계약서 파일을 찾을 수 없습니다."),
     OCR_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "OCR 결과를 찾을 수 없습니다."),
