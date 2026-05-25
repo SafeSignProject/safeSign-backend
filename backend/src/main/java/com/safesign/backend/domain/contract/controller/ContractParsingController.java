@@ -1,6 +1,7 @@
 package com.safesign.backend.domain.contract.controller;
 
 import com.safesign.backend.domain.contract.dto.response.ParsingResponse;
+import com.safesign.backend.domain.contract.service.ContractParsingQueryService;
 import com.safesign.backend.domain.contract.service.ContractParsingService;
 import com.safesign.backend.global.auth.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +14,27 @@ import org.springframework.web.bind.annotation.*;
 public class ContractParsingController {
 
     private final ContractParsingService parsingService;
+    private final ContractParsingQueryService parsingQueryService;
 
-    @RequestMapping(
-            value = "/{contractId}/parse",
-            method = {RequestMethod.GET, RequestMethod.POST}
-    )
-    public ParsingResponse parseContract(
+    // 저장용: OCR 결과를 파싱해서 DB 저장
+    @PostMapping("/{contractId}/parse")
+    public ParsingResponse parseAndSaveContract(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long contractId
     ) {
         return parsingService.parse(
+                userDetails.getUserId(),
+                contractId
+        );
+    }
+
+    // 조회용: 이미 DB에 저장된 파싱 결과만 조회
+    @GetMapping("/{contractId}/parse")
+    public ParsingResponse getParsedContract(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long contractId
+    ) {
+        return parsingQueryService.getParsedResult(
                 userDetails.getUserId(),
                 contractId
         );

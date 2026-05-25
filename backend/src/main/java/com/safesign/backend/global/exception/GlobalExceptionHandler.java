@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
                         ErrorResponse.builder()
                                 .status(errorCode.getStatus().value())
                                 .error(errorCode.getStatus().name())
-                                .message(errorCode.getMessage())
+                                .message(e.getMessage())
                                 .timestamp(LocalDateTime.now())
                                 .build()
                 );
