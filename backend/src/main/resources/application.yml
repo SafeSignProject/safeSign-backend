@@ -84,3 +84,7 @@ aws:
     bucket: ${AWS_S3_BUCKET}
     region: ${AWS_REGION}
     base-prefix: ${AWS_S3_BASE_PREFIX}
+
+ai:
+  service:
+    base-url: ${AI_SERVICE_BASE_URL:https://safesign-ai.site/ai-docs}
