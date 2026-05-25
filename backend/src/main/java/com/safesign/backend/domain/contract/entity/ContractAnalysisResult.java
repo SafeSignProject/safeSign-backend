@@ -1,7 +1,10 @@
 package com.safesign.backend.domain.contract.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public class ContractAnalysisResult {
     @Column(columnDefinition = "TEXT")
     private String summary;
 
+    @Column
+    private Double analysisTimeSeconds;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -49,12 +55,14 @@ public class ContractAnalysisResult {
             Contract contract,
             Integer overallRiskScore,
             String riskTypes,
-            String summary
+            String summary,
+            Double analysisTimeSeconds
     ) {
         this.contract = contract;
         this.overallRiskScore = overallRiskScore;
         this.riskTypes = riskTypes;
         this.summary = summary;
+        this.analysisTimeSeconds = analysisTimeSeconds;
     }
 
     public void addRecommendedSpecialClause(ContractRecommendedSpecialClause clause) {
