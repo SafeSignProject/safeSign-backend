@@ -1,6 +1,7 @@
 package com.safesign.backend.domain.ocr.controller;
 
 import com.safesign.backend.domain.contract.service.ContractAiAnalysisService;
+import com.safesign.backend.domain.contract.service.ContractParsingService;
 import com.safesign.backend.domain.ocr.dto.response.OcrResponse;
 import com.safesign.backend.domain.ocr.service.OcrQueryService;
 import com.safesign.backend.domain.ocr.service.OcrService;
@@ -23,6 +24,7 @@ public class OcrController {
 
     private final OcrService ocrService;
     private final OcrQueryService ocrQueryService;
+    private final ContractParsingService parsingService;
     private final ContractAiAnalysisService contractAiAnalysisService;
 
     @PostMapping("/{contractId}/ocr")
@@ -31,15 +33,23 @@ public class OcrController {
             @PathVariable Long contractId,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
     ) {
+        // 1. OCR 처리 및 OCR 결과 DB 저장
         ocrService.process(userDetails.getUserId(), contractId);
 
+        // 2. OCR 결과 기반 조항 파싱 실행
+        parsingService.parse(
+                userDetails.getUserId(),
+                contractId
+        );
+
+        // 3. AI 분석 요청 및 AI 결과 DB 저장
         contractAiAnalysisService.analyzeFromOcr(
                 userDetails.getUserId(),
                 contractId,
                 authorization
         );
 
-        return ResponseEntity.ok("OCR 및 AI 분석 처리가 완료되었습니다.");
+        return ResponseEntity.ok("OCR, 파싱 및 AI 분석 처리가 완료되었습니다.");
     }
 
     @GetMapping("/{contractId}/ocr")
