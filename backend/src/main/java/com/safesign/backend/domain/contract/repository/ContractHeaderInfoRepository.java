@@ -9,7 +9,5 @@ import java.util.List;
 public interface ContractHeaderInfoRepository
         extends JpaRepository<ContractHeaderInfo, Long> {
 
-    void deleteByContract(Contract contract);
-
     List<ContractHeaderInfo> findByContract(Contract contract);
 }

@@ -2,6 +2,7 @@ package com.safesign.backend.domain.ocr.repository;
 
 import com.safesign.backend.domain.contract.entity.Contract;
 import com.safesign.backend.domain.ocr.entity.OcrResult;
+import com.safesign.backend.domain.ocr.enums.OcrStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,9 @@ public interface OcrResultRepository extends JpaRepository<OcrResult, Long> {
     order by o.ocrResultId desc
 """)
     Optional<OcrResult> findLatestByContract(@Param("contract") Contract contract);
+
+    Optional<OcrResult> findFirstByContractAndStatusOrderByOcrResultIdDesc(
+            Contract contract,
+            OcrStatus status
+    );
 }

@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface ContractClauseRepository
         extends JpaRepository<ContractClause, Long> {
 
-    void deleteByContract(Contract contract);
-
     Optional<ContractClause> findFirstByContract_ContractIdAndClauseNoAndClauseText(
             Long contractId,
             String clauseNo,

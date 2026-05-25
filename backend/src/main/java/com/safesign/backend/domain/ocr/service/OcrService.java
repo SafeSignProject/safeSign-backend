@@ -52,6 +52,13 @@ public class OcrService {
                 .findByContractIdAndUser_UserId(contractId, userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
 
+        if (ocrResultRepository
+                .findFirstByContractAndStatusOrderByOcrResultIdDesc(contract, OcrStatus.COMPLETED)
+                .isPresent()) {
+            log.info("기존 OCR 결과 재사용 - contractId={}", contractId);
+            return;
+        }
+
         ContractFile contractFile = getFirstContractFile(contract);
         contract.updateStatus(ContractStatus.OCR_PROCESSING);
 
