@@ -43,7 +43,7 @@ public class AiAnalysisClient {
         RestClient.RequestBodySpec request = restClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/analyze_from_ocr/{contractId}")
-                        .queryParam("explain", true)
+                        .queryParam("explain", false)
                         .build(contractId));
 
         if (authorization != null && !authorization.isBlank()) {
