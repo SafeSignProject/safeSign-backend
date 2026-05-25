@@ -2,9 +2,11 @@ package com.safesign.backend.domain.contract.controller;
 
 import com.safesign.backend.domain.contract.dto.response.ContractUploadResponse;
 import com.safesign.backend.domain.contract.dto.response.ContractListResponse;
+import com.safesign.backend.domain.contract.dto.response.ContractAnalysisResponse;
 import com.safesign.backend.domain.contract.enums.UploadType;
 import com.safesign.backend.domain.contract.service.ContractService;
 import com.safesign.backend.domain.contract.service.ContractQueryService;
+import com.safesign.backend.domain.contract.service.ContractAnalysisQueryService;
 import com.safesign.backend.global.auth.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ public class ContractController {
 
     private final ContractService contractService;
     private final ContractQueryService contractQueryService;
+    private final ContractAnalysisQueryService contractAnalysisQueryService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -45,6 +48,17 @@ public class ContractController {
         Long userId = userDetails.getUserId();
 
         return contractQueryService.getContracts(userId, keyword, sort);
+    }
+
+    @GetMapping("/{contractId}/analysis")
+    public ContractAnalysisResponse getAnalysisResult(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long contractId
+    ) {
+        return contractAnalysisQueryService.getAnalysisResult(
+                userDetails.getUserId(),
+                contractId
+        );
     }
 
     @DeleteMapping("/{contractId}")
