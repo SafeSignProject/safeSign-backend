@@ -26,8 +26,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     ANALYSIS_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "분석 로그를 찾을 수 없습니다."),
-    ANALYSIS_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "분석 결과를 찾을 수 없습니다.");
-
+    ANALYSIS_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "분석 결과를 찾을 수 없습니다."),
+    PARSE_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "파싱 결과를 찾을 수 없습니다.");
     private final HttpStatus status;
     private final String message;
 }

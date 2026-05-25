@@ -35,7 +35,7 @@ public class ContractParsingService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
 
         ContractOcrResult ocr = ocrRepository
-                .findLatestOcrResult(contract)
+                .findFirstByContractOrderByOcrResultIdDesc(contract)
                 .orElseThrow(() -> new CustomException(ErrorCode.OCR_RESULT_NOT_FOUND));
 
         // 2. OCR 텍스트 전처리 및 줄 단위 분리
