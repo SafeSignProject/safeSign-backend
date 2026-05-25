@@ -3,6 +3,9 @@ package com.safesign.backend.domain.contract.service;
 import com.safesign.backend.domain.contract.dto.response.*;
 import com.safesign.backend.domain.contract.entity.*;
 import com.safesign.backend.domain.contract.repository.*;
+import com.safesign.backend.domain.ocr.entity.OcrResult;
+import com.safesign.backend.domain.ocr.enums.OcrStatus;
+import com.safesign.backend.domain.ocr.repository.OcrResultRepository;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +26,10 @@ import java.util.stream.Collectors;
 public class ContractParsingService {
 
     private final ContractRepository contractRepository;
-    private final ContractOcrResultRepository ocrRepository;
+    private final OcrResultRepository ocrRepository;
     private final ContractClauseRepository clauseRepository;
     private final ContractHeaderInfoRepository headerRepository;
+    private final ContractParsingQueryService parsingQueryService;
 
     public ParsingResponse parse(Long userId, Long contractId) {
 
@@ -34,9 +38,14 @@ public class ContractParsingService {
                 .findByContractIdAndUser_UserId(contractId, userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
 
-        ContractOcrResult ocr = ocrRepository
-                .findFirstByContractOrderByOcrResultIdDesc(contract)
+        OcrResult ocr = ocrRepository
+                .findFirstByContractAndStatusOrderByOcrResultIdDesc(contract, OcrStatus.COMPLETED)
                 .orElseThrow(() -> new CustomException(ErrorCode.OCR_RESULT_NOT_FOUND));
+
+        if (!clauseRepository.findByContractOrderByOrderNoAsc(contract).isEmpty()) {
+            log.info("기존 파싱 결과 재사용 - contractId={}", contractId);
+            return parsingQueryService.getParsedResult(userId, contractId);
+        }
 
         // 2. OCR 텍스트 전처리 및 줄 단위 분리
         String cleanText = preprocess(ocr.getFullText());
@@ -45,11 +54,7 @@ public class ContractParsingService {
                 .filter(line -> !line.isEmpty())
                 .collect(Collectors.toList());
 
-        // 3. 기존 데이터 초기화 (조항 & 표제부)
-        clauseRepository.deleteByContract(contract);
-        headerRepository.deleteByContract(contract);
-
-        // 4. 조항 단위 분리 및 엔티티 저장
+        // 3. 조항 단위 분리 및 엔티티 저장
         List<ClauseResponse> clauses = extractClauses(cleanText);
 
         for (ClauseResponse clause : clauses) {
@@ -67,10 +72,10 @@ public class ContractParsingService {
             clauseRepository.save(entity);
         }
 
-        // 5. 표제부(Header) 추출
+        // 4. 표제부(Header) 추출
         HeaderResponse header = extractHeaderInfo(lines);
 
-        // 6. 표제부(Header)
+        // 5. 표제부(Header)
         ContractHeaderInfo headerEntity = ContractHeaderInfo.builder()
                 .contract(contract)
                 .propertyAddress(header.getAddress())
@@ -87,7 +92,7 @@ public class ContractParsingService {
 
         headerRepository.save(headerEntity);
 
-        // 7. 결과 반환
+        // 6. 결과 반환
         return new ParsingResponse(
                 contract.getContractId(),
                 clauses.size(),
