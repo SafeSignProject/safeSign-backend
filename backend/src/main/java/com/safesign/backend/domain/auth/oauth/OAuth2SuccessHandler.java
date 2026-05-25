@@ -60,6 +60,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
-        response.sendRedirect(frontendUrl);
+        response.sendRedirect(frontendUrl + "/oauth/success");
     }
 }
