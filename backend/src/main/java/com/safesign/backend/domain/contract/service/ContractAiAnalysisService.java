@@ -28,6 +28,13 @@ public class ContractAiAnalysisService {
 
         try {
             AiAnalysisRequest request = AiAnalysisRequest.from(parsingResponse);
+
+            log.info(
+                    "AI analysis request sending - contractId={}, clauseCount={}",
+                    contractId,
+                    request.getClauses().size()
+            );
+
             AiAnalysisResponse response =
                     aiAnalysisClient.analyzeContract(request);
 
@@ -35,7 +42,16 @@ public class ContractAiAnalysisService {
                 throw new IllegalStateException("AI analysis response is empty.");
             }
 
+            log.info(
+                    "AI analysis response received - contractId={}, overallRiskScore={}, percentile={}, clauseCount={}",
+                    contractId,
+                    response.getOverallAnalysis().getOverallRiskScore(),
+                    response.getOverallAnalysis().getPercentile(),
+                    response.getClauseAnalyses() == null ? 0 : response.getClauseAnalyses().size()
+            );
+
             persistenceService.saveCompletedResult(userId, contractId, response);
+            log.info("AI analysis result saved - contractId={}", contractId);
         } catch (RestClientResponseException e) {
             log.error(
                     "AI analysis API failed - contractId={}, status={}, responseBody={}",
