@@ -16,12 +16,13 @@ public class AiAnalysisRequest {
 
     private static final Pattern ARTICLE_NO_PATTERN =
             Pattern.compile("^(제\\s*\\d+\\s*조|특약\\s*\\d+|특약사항)");
+
     private static final Pattern ARTICLE_TITLE_PATTERN =
             Pattern.compile("\\[([^]]+)]");
 
     private Long contractId;
+
     private List<ClauseRequest> clauses;
-    private boolean explain;
 
     public static AiAnalysisRequest from(ParsingResponse parsingResponse) {
         List<ClauseRequest> clauses = parsingResponse.getClauses()
@@ -31,8 +32,7 @@ public class AiAnalysisRequest {
 
         return new AiAnalysisRequest(
                 parsingResponse.getContractId(),
-                clauses,
-                true
+                clauses
         );
     }
 
