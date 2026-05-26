@@ -1,8 +1,8 @@
 package com.safesign.backend.domain.contract.client;
 
+import com.safesign.backend.domain.contract.dto.request.AiAnalysisRequest;
 import com.safesign.backend.domain.contract.dto.response.AiAnalysisResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -36,21 +36,11 @@ public class AiAnalysisClient {
                 .build();
     }
 
-    public AiAnalysisResponse analyzeFromOcr(
-            Long contractId,
-            String authorization
-    ) {
-        RestClient.RequestBodySpec request = restClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/analyze_from_ocr/{contractId}")
-                        .queryParam("explain", true)
-                        .build(contractId));
-
-        if (authorization != null && !authorization.isBlank()) {
-            request.header(HttpHeaders.AUTHORIZATION, authorization);
-        }
-
-        return request.retrieve()
+    public AiAnalysisResponse analyzeContract(AiAnalysisRequest analysisRequest) {
+        return restClient.post()
+                .uri("/analyze_contract")
+                .body(analysisRequest)
+                .retrieve()
                 .body(AiAnalysisResponse.class);
     }
 }
