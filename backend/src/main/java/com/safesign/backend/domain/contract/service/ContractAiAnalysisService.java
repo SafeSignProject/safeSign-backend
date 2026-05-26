@@ -1,7 +1,9 @@
 package com.safesign.backend.domain.contract.service;
 
 import com.safesign.backend.domain.contract.client.AiAnalysisClient;
+import com.safesign.backend.domain.contract.dto.request.AiAnalysisRequest;
 import com.safesign.backend.domain.contract.dto.response.AiAnalysisResponse;
+import com.safesign.backend.domain.contract.dto.response.ParsingResponse;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +23,13 @@ public class ContractAiAnalysisService {
     @Value("${ai.debug.expose-error:false}")
     private boolean exposeAiError;
 
-    public void analyzeFromOcr(Long userId, Long contractId, String authorization) {
+    public void analyzeContract(Long userId, Long contractId, ParsingResponse parsingResponse) {
         persistenceService.markProcessing(userId, contractId);
 
         try {
+            AiAnalysisRequest request = AiAnalysisRequest.from(parsingResponse);
             AiAnalysisResponse response =
-                    aiAnalysisClient.analyzeFromOcr(contractId, authorization);
+                    aiAnalysisClient.analyzeContract(request);
 
             if (response == null || response.getOverallAnalysis() == null) {
                 throw new IllegalStateException("AI analysis response is empty.");
