@@ -210,15 +210,14 @@ public class AdminAnalysisRepository {
     public List<Object[]> findAnalysisIssues(Long analysisId) {
 
         String sql = """
-            SELECT
-                ca.title,
-                ca.reason,
-                ca.risk_type
-            FROM contract_clause_analysis ca
-            WHERE ca.analysis_result_id = :analysisId
-            ORDER BY ca.risk_score DESC NULLS LAST, ca.clause_analysis_id ASC
-            LIMIT 3
-        """;
+        SELECT
+            ca.title,
+            ca.reason,
+            ca.risk_type
+        FROM contract_clause_analysis ca
+        WHERE ca.analysis_result_id = :analysisId
+        ORDER BY ca.risk_score DESC NULLS LAST, ca.clause_analysis_id ASC
+    """;
 
         return em.createNativeQuery(sql)
                 .setParameter("analysisId", analysisId)

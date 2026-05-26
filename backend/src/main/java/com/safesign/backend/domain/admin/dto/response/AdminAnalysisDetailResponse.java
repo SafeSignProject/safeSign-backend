@@ -15,5 +15,6 @@ public class AdminAnalysisDetailResponse {
     private LocalDateTime analyzedAt;
     private Double totalTimeSeconds;
     private Integer riskScore;
+    private Integer issueCount;
     private List<AdminAnalysisIssueResponse> issues;
 }
