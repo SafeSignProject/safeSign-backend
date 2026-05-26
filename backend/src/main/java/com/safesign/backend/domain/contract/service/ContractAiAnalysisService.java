@@ -1,81 +1,38 @@
 package com.safesign.backend.domain.contract.service;
 
-import com.safesign.backend.domain.contract.client.AiAnalysisClient;
-import com.safesign.backend.domain.contract.dto.request.AiAnalysisRequest;
-import com.safesign.backend.domain.contract.dto.response.AiAnalysisResponse;
-import com.safesign.backend.domain.contract.dto.response.ParsingResponse;
+import com.safesign.backend.domain.contract.dto.response.AnalysisStartResponse;
+import com.safesign.backend.domain.contract.repository.ContractRepository;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientResponseException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ContractAiAnalysisService {
 
-    private final AiAnalysisClient aiAnalysisClient;
+    private final ContractRepository contractRepository;
     private final ContractAnalysisPersistenceService persistenceService;
+    private final ContractAiAnalysisWorker analysisWorker;
 
-    @Value("${ai.debug.expose-error:false}")
-    private boolean exposeAiError;
+    public AnalysisStartResponse startAnalysis(Long userId, Long contractId) {
+        contractRepository.findByContractIdAndUser_UserId(contractId, userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CONTRACT_NOT_FOUND));
 
-    public void analyzeContract(Long userId, Long contractId, ParsingResponse parsingResponse) {
+        // 분석 상태를 PROCESSING으로 먼저 저장
         persistenceService.markProcessing(userId, contractId);
 
-        try {
-            AiAnalysisRequest request = AiAnalysisRequest.from(parsingResponse);
+        // 실제 AI 호출은 비동기로 실행
+        analysisWorker.analyzeAsync(userId, contractId);
 
-            log.info(
-                    "AI analysis request sending - contractId={}, clauseCount={}",
-                    contractId,
-                    request.getClauses().size()
-            );
+        log.info("AI analysis accepted - contractId={}", contractId);
 
-            AiAnalysisResponse response =
-                    aiAnalysisClient.analyzeContract(request);
-
-            if (response == null || response.getOverallAnalysis() == null) {
-                throw new IllegalStateException("AI analysis response is empty.");
-            }
-
-            log.info(
-                    "AI analysis response received - contractId={}, overallRiskScore={}, percentile={}, clauseCount={}",
-                    contractId,
-                    response.getOverallAnalysis().getOverallRiskScore(),
-                    response.getOverallAnalysis().getPercentile(),
-                    response.getClauseAnalyses() == null ? 0 : response.getClauseAnalyses().size()
-            );
-
-            persistenceService.saveCompletedResult(userId, contractId, response);
-            log.info("AI analysis result saved - contractId={}", contractId);
-        } catch (RestClientResponseException e) {
-            log.error(
-                    "AI analysis API failed - contractId={}, status={}, responseBody={}",
-                    contractId,
-                    e.getStatusCode(),
-                    e.getResponseBodyAsString(),
-                    e
-            );
-            persistenceService.markFailed(userId, contractId);
-            throw toAnalysisException(
-                    "AI API " + e.getStatusCode() + ": " + e.getResponseBodyAsString()
-            );
-        } catch (Exception e) {
-            log.error("AI analysis failed - contractId={}", contractId, e);
-            persistenceService.markFailed(userId, contractId);
-            throw toAnalysisException(e.getMessage());
-        }
-    }
-
-    private CustomException toAnalysisException(String detail) {
-        if (exposeAiError && detail != null && !detail.isBlank()) {
-            return new CustomException(ErrorCode.AI_ANALYSIS_FAILED, detail);
-        }
-
-        return new CustomException(ErrorCode.AI_ANALYSIS_FAILED);
+        return new AnalysisStartResponse(
+                contractId,
+                "PROCESSING",
+                "AI 분석이 시작되었습니다."
+        );
     }
 }
