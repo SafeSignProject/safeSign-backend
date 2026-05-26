@@ -24,6 +24,8 @@ public class AiAnalysisRequest {
 
     private List<ClauseRequest> clauses;
 
+    private boolean explain;
+
     public static AiAnalysisRequest from(ParsingResponse parsingResponse) {
         List<ClauseRequest> clauses = parsingResponse.getClauses()
                 .stream()
@@ -32,7 +34,8 @@ public class AiAnalysisRequest {
 
         return new AiAnalysisRequest(
                 parsingResponse.getContractId(),
-                clauses
+                clauses,
+                true
         );
     }
 
