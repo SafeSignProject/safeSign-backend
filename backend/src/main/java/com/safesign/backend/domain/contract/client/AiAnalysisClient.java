@@ -3,6 +3,7 @@ package com.safesign.backend.domain.contract.client;
 import com.safesign.backend.domain.contract.dto.request.AiAnalysisRequest;
 import com.safesign.backend.domain.contract.dto.response.AiAnalysisResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -38,7 +39,11 @@ public class AiAnalysisClient {
 
     public AiAnalysisResponse analyzeContract(AiAnalysisRequest analysisRequest) {
         return restClient.post()
-                .uri("/analyze_contract")
+                .uri(uriBuilder -> uriBuilder
+                        .path("/analyze_contract")
+                        .queryParam("explain", true)
+                        .build())
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(analysisRequest)
                 .retrieve()
                 .body(AiAnalysisResponse.class);
