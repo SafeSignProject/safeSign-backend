@@ -132,6 +132,7 @@ public class AdminAnalysisService {
                 .analyzedAt((LocalDateTime) row[2])
                 .totalTimeSeconds(toDouble(row[3]))
                 .riskScore(toInteger(row[4]))
+                .issueCount(issues.size())
                 .issues(issues)
                 .build();
     }
