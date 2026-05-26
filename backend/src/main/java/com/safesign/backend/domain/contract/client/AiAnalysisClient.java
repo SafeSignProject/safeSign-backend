@@ -39,10 +39,7 @@ public class AiAnalysisClient {
 
     public AiAnalysisResponse analyzeContract(AiAnalysisRequest analysisRequest) {
         return restClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/analyze_contract")
-                        .queryParam("explain", true)
-                        .build())
+                .uri("/analyze_contract")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(analysisRequest)
                 .retrieve()
