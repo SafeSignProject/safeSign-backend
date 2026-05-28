@@ -57,10 +57,14 @@ public class AdminAnalysisService {
         Long totalCount =
                 adminAnalysisRepository.countUserAnalysis(userId);
 
+        Long allUserTotalAnalysisCount =
+                adminAnalysisRepository.countAllAnalysis();
+
         return new AdminUserAnalysisHistoryResponse(
                 user.getUserId(),
                 user.getName(),
                 totalCount,
+                allUserTotalAnalysisCount,
                 histories
         );
     }

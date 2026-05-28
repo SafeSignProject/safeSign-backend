@@ -55,6 +55,19 @@ public class AdminAnalysisRepository {
         return result.longValue();
     }
 
+    public Long countAllAnalysis() {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM contract_analysis_result
+        """;
+
+        Number result = (Number) em.createNativeQuery(sql)
+                .getSingleResult();
+
+        return result.longValue();
+    }
+
     public List<Object[]> findAnalysisLogs() {
 
         String sql = """
