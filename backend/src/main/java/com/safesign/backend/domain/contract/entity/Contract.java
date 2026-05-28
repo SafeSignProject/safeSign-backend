@@ -5,6 +5,7 @@ import com.safesign.backend.domain.contract.enums.UploadSource;
 import com.safesign.backend.domain.contract.enums.UploadType;
 import com.safesign.backend.domain.user.entity.User;
 import com.safesign.backend.domain.ocr.entity.OcrResult;
+import com.safesign.backend.global.util.KstTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -123,16 +124,18 @@ public class Contract {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        LocalDateTime now = KstTime.now();
+
+        this.createdAt = now;
+        this.updatedAt = now;
 
         if (this.uploadedAt == null) {
-            this.uploadedAt = LocalDateTime.now();
+            this.uploadedAt = now;
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = KstTime.now();
     }
 }

@@ -11,6 +11,7 @@ import com.safesign.backend.domain.user.entity.User;
 import com.safesign.backend.domain.user.repository.UserRepository;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
+import com.safesign.backend.global.util.KstTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class DashboardService {
         Long riskyContracts = contractAnalysisResultRepository
                 .countRiskyAnalysesByUserId(userId, RISKY_SCORE_THRESHOLD);
 
-        LocalDate now = LocalDate.now();
+        LocalDate now = KstTime.today();
         LocalDateTime startOfMonth = now.withDayOfMonth(1).atStartOfDay();
         LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
 

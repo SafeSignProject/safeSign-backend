@@ -1,10 +1,9 @@
 package com.safesign.backend.global.exception;
 
+import com.safesign.backend.global.util.KstTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,7 +19,7 @@ public class GlobalExceptionHandler {
                                 .status(errorCode.getStatus().value())
                                 .error(errorCode.getStatus().name())
                                 .message(e.getMessage())
-                                .timestamp(LocalDateTime.now())
+                                .timestamp(KstTime.now())
                                 .build()
                 );
     }
@@ -28,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
 
-        e.printStackTrace(); // 🔥 콘솔에 진짜 에러 출력
+        e.printStackTrace();
 
         return ResponseEntity
                 .internalServerError()
@@ -37,7 +36,7 @@ public class GlobalExceptionHandler {
                                 .status(500)
                                 .error("INTERNAL_SERVER_ERROR")
                                 .message(e.getMessage())
-                                .timestamp(LocalDateTime.now())
+                                .timestamp(KstTime.now())
                                 .build()
                 );
     }

@@ -21,13 +21,13 @@ import com.safesign.backend.domain.ocr.repository.OcrPageRepository;
 import com.safesign.backend.domain.ocr.repository.OcrResultRepository;
 import com.safesign.backend.global.exception.CustomException;
 import com.safesign.backend.global.exception.ErrorCode;
+import com.safesign.backend.global.util.KstTime;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -67,7 +67,7 @@ public class OcrService {
                 .provider(OCR_PROVIDER)
                 .modelId(azureOcrProperties.modelId())
                 .status(OcrStatus.PROCESSING)
-                .startedAt(LocalDateTime.now())
+                .startedAt(KstTime.now())
                 .build();
 
         ocrResultRepository.save(ocrResult);

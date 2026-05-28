@@ -1,5 +1,6 @@
 package com.safesign.backend.domain.ocr.entity;
 
+import com.safesign.backend.global.util.KstTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -50,6 +51,6 @@ public class OcrLine {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = KstTime.now();
     }
 }
