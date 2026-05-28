@@ -15,5 +15,7 @@ public class AdminUserAnalysisHistoryResponse {
 
     private Long totalAnalysisCount;
 
+    private Long allUserTotalAnalysisCount;
+
     private List<AdminUserAnalysisHistoryItem> histories;
 }
