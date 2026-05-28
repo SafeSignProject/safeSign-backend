@@ -2,6 +2,7 @@ package com.safesign.backend.domain.user.entity;
 
 import com.safesign.backend.domain.user.enums.ProviderType;
 import com.safesign.backend.domain.user.enums.UserRole;
+import com.safesign.backend.global.util.KstTime;
 
 import jakarta.persistence.*;
 
@@ -87,9 +88,10 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
+        LocalDateTime now = KstTime.now();
 
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
 
         if (this.role == null) {
             this.role = UserRole.USER;
@@ -99,11 +101,11 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
 
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = KstTime.now();
     }
 
     public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt = KstTime.now();
     }
 
     public void withdraw() {
@@ -113,6 +115,6 @@ public class User {
         this.password = null;
         this.name = "탈퇴한 사용자";
         this.providerUserId = this.providerUserId + suffix;
-        this.deletedAt = LocalDateTime.now();
+        this.deletedAt = KstTime.now();
     }
 }

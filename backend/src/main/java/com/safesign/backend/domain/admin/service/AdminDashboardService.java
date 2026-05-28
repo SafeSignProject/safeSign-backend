@@ -5,6 +5,7 @@ import com.safesign.backend.domain.admin.dto.response.AdminDashboardRecentUserRe
 import com.safesign.backend.domain.admin.dto.response.AdminDashboardResponse;
 import com.safesign.backend.domain.admin.dto.response.AdminDashboardSummaryResponse;
 import com.safesign.backend.domain.admin.repository.AdminDashboardRepository;
+import com.safesign.backend.global.util.KstTime;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,7 @@ public class AdminDashboardService {
 
     public AdminDashboardResponse getDashboard() {
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = KstTime.today();
         LocalDateTime startAt = today.atStartOfDay();
         LocalDateTime endAt = today.plusDays(1).atStartOfDay();
 
@@ -161,7 +162,7 @@ public class AdminDashboardService {
 
         Duration duration = Duration.between(
                 targetTime,
-                LocalDateTime.now()
+                KstTime.now()
         );
 
         long minutes = duration.toMinutes();

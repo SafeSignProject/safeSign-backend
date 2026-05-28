@@ -1,5 +1,6 @@
 package com.safesign.backend.domain.contract.entity;
 
+import com.safesign.backend.global.util.KstTime;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -71,14 +72,15 @@ public class ContractHeaderInfo {
 
     @PrePersist
     protected void onCreate() {
+        LocalDateTime now = KstTime.now();
 
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
     @PreUpdate
     protected void onUpdate() {
 
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = KstTime.now();
     }
 }

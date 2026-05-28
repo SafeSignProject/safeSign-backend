@@ -2,6 +2,7 @@ package com.safesign.backend.domain.ocr.entity;
 
 import com.safesign.backend.domain.contract.entity.Contract;
 import com.safesign.backend.domain.ocr.enums.OcrStatus;
+import com.safesign.backend.global.util.KstTime;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -85,14 +86,14 @@ public class OcrResult {
         this.fullText = fullText;
         this.rawJson = rawJson;
         this.status = OcrStatus.COMPLETED;
-        this.completedAt = LocalDateTime.now();
+        this.completedAt = KstTime.now();
         this.failureReason = null;
     }
 
     public void fail(String failureReason) {
         this.status = OcrStatus.FAILED;
         this.failureReason = failureReason;
-        this.completedAt = LocalDateTime.now();
+        this.completedAt = KstTime.now();
     }
 
     public void updateStatus(OcrStatus status) {
@@ -101,16 +102,18 @@ public class OcrResult {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        LocalDateTime now = KstTime.now();
+
+        this.createdAt = now;
+        this.updatedAt = now;
 
         if (this.startedAt == null) {
-            this.startedAt = LocalDateTime.now();
+            this.startedAt = now;
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = KstTime.now();
     }
 }

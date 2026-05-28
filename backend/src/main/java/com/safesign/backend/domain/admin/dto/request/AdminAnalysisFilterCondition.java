@@ -1,5 +1,7 @@
 package com.safesign.backend.domain.admin.dto.request;
 
+import com.safesign.backend.global.util.KstTime;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -27,7 +29,7 @@ public record AdminAnalysisFilterCondition(
             return null;
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = KstTime.today();
 
         if (period.equalsIgnoreCase("TODAY")) {
             return today.atStartOfDay();
@@ -50,7 +52,7 @@ public record AdminAnalysisFilterCondition(
             return null;
         }
 
-        return LocalDate.now().plusDays(1).atStartOfDay();
+        return KstTime.today().plusDays(1).atStartOfDay();
     }
 
     public String getStatusForSearch() {
