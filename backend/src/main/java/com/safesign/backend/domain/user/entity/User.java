@@ -108,6 +108,12 @@ public class User {
         this.deletedAt = KstTime.now();
     }
 
+    public void restore(String email, String name) {
+        this.email = email;
+        this.name = name;
+        this.deletedAt = null;
+    }
+
     public void withdraw() {
         String suffix = "_deleted_" + this.userId + "_" + System.currentTimeMillis();
 

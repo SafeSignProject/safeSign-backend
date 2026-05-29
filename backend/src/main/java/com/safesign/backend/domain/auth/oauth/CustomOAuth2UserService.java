@@ -52,6 +52,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         .build()
         ));
 
+        if (user.getDeletedAt() != null) {
+            user.restore(userInfo.getEmail(), finalName);
+            userRepository.save(user);
+        }
+
         Map<String, Object> attributes = new HashMap<>(oauth2User.getAttributes());
         attributes.put("userId", user.getUserId());
 
